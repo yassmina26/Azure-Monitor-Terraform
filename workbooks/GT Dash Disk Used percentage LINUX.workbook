@@ -1,0 +1,213 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "parameters": [
+          {
+            "id": "1ca69445-60fc-4806-b43d-ac7e6aad630a",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.compute/virtualmachines'\r\n\t| summarize Count = count() by subscriptionId\r\n\t| order by Count desc\r\n\t| extend Rank = row_number()\r\n\t| project value = subscriptionId, label = subscriptionId, selected = Rank == 1",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "/subscriptions/9e594e87-09ad-4ec5-a907-404eca6ce37b"
+            ]
+          },
+          {
+            "id": "43bc6761-7c90-4e8e-a44c-22916211260d",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspaces",
+            "type": 5,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "resources\r\n| where type =~ 'microsoft.operationalinsights/workspaces'\r\n| project id ",
+            "crossComponentResources": [
+              "{Subscriptions}"
+            ],
+            "typeSettings": {
+              "resourceTypeFilter": {
+                "microsoft.operationalinsights/workspaces": true
+              },
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "defaultValue": "value::all",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "c4b69c01-2263-4ada-8d9c-43433b739ff3",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "label": "Time Range",
+            "type": 4,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "value": {
+              "durationMs": 2592000000
+            }
+          }
+        ],
+        "style": "above",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "Parameter block"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Perf\r\n| where ObjectName == \"Logical Disk\" and CounterName == \"% Used Space\"\r\n| summarize (TimeGenerated, UsedSpacePercentage)=arg_max(TimeGenerated, CounterValue) by _ResourceId, InstanceName",
+        "size": 0,
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspaces}"
+        ],
+        "visualization": "graph",
+        "graphSettings": {
+          "type": 2,
+          "topContent": {
+            "columnMatch": "_ResourceId",
+            "formatter": 13,
+            "formatOptions": {
+              "linkColumn": "_ResourceId",
+              "linkTarget": "Resource",
+              "showIcon": false
+            }
+          },
+          "centerContent": {
+            "columnMatch": "UsedSpacePercentage",
+            "formatter": 1,
+            "numberFormat": {
+              "unit": 1,
+              "options": {
+                "style": "decimal",
+                "maximumFractionDigits": 2,
+                "maximumSignificantDigits": 3
+              }
+            }
+          },
+          "bottomContent": {
+            "columnMatch": "InstanceName",
+            "formatter": 1
+          },
+          "nodeIdField": "_ResourceId",
+          "graphOrientation": 3,
+          "showOrientationToggles": false,
+          "nodeSize": null,
+          "staticNodeSize": 100,
+          "colorSettings": {
+            "nodeColorField": "UsedSpacePercentage",
+            "type": 3,
+            "thresholdsGrid": [
+              {
+                "operator": "<=",
+                "thresholdValue": "80",
+                "representation": "green"
+              },
+              {
+                "operator": ">",
+                "thresholdValue": "80",
+                "representation": "orange"
+              },
+              {
+                "operator": ">=",
+                "thresholdValue": "90",
+                "representation": "redBright"
+              },
+              {
+                "operator": "Default",
+                "thresholdValue": null,
+                "representation": "lightBlue"
+              }
+            ]
+          },
+          "hivesMargin": 5,
+          "edgeColorSettings": null
+        }
+      },
+      "showPin": true,
+      "name": "query - 0"
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

@@ -1,0 +1,269 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Subscription}"
+        ],
+        "parameters": [
+          {
+            "id": "1ca69445-60fc-4806-b43d-ac7e6aad630a",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.compute/virtualmachines'\r\n\t| summarize Count = count() by subscriptionId\r\n\t| order by Count desc\r\n\t| extend Rank = row_number()\r\n\t| project value = subscriptionId, label = subscriptionId, selected = Rank == 1",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "/subscriptions/40ac2375-f13a-4487-815e-41b0348663f5",
+              "/subscriptions/372eedd3-d913-4439-980f-ec05a0b45964",
+              "/subscriptions/09d81800-83a4-4e0f-8355-cf6b393d7adf",
+              "/subscriptions/01b1b987-a1de-4caf-a188-fc7755e4ff77",
+              "/subscriptions/0dc9fa44-bc2a-4ccf-b509-5d5d7060ccc2",
+              "/subscriptions/eb7b8bcd-7c50-4e00-97de-7b4a2a30e54f",
+              "/subscriptions/9e594e87-09ad-4ec5-a907-404eca6ce37b"
+            ]
+          },
+          {
+            "id": "43bc6761-7c90-4e8e-a44c-22916211260d",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspaces",
+            "type": 5,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "resources\r\n| where type =~ 'microsoft.operationalinsights/workspaces'\r\n| project id ",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "typeSettings": {
+              "resourceTypeFilter": {
+                "microsoft.operationalinsights/workspaces": true
+              },
+              "additionalResourceOptions": [
+                "value::all"
+              ]
+            },
+            "defaultValue": "value::all",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "e94aafa3-c5d9-4523-89f0-4e87aa754511",
+            "version": "KqlParameterItem/1.0",
+            "name": "VirtualMachines",
+            "label": "Virtual Machines",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.compute/virtualmachines'\n\t| order by name asc\n\t| extend Rank = row_number()\n\t| project value = id, label = id, selected = Rank <= 25",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "typeSettings": {
+              "resourceTypeFilter": {
+                "microsoft.compute/virtualmachines": true
+              },
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "c4b69c01-2263-4ada-8d9c-43433b739ff3",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "label": "Time Range",
+            "type": 4,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000
+                },
+                {
+                  "durationMs": 900000
+                },
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "value": {
+              "durationMs": 2592000000
+            }
+          }
+        ],
+        "style": "above",
+        "queryType": 0,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "Parameter block"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AlertsManagementResources\r\n| where properties.essentials.startDateTime {TimeRange:value}\r\n| where properties.essentials.alertState == \"New\"\r\n| where properties.essentials.monitorCondition == \"Fired\"\r\n| extend createdOn = todatetime(properties.essentials.startDateTime)\r\n| extend monitorService = tostring(properties.essentials.monitorService)\r\n| extend Severity = tostring(properties.essentials.severity)\r\n| extend Description = tostring(properties.essentials.description)\r\n| extend lastModified = todatetime(properties.essentials.lastModifiedDateTime)\r\n| extend alertState = tostring(properties.essentials.alertState)\r\n| extend affectedResource = tostring(parse_json(properties.essentials.targetResourceName))\r\n| project createdOn, name, Severity, lastModified, affectedResource, Details = \"Click for more details\", Description, alertState, monitorService, properties\r\n| sort by createdOn desc",
+        "size": 0,
+        "title": "Active Alerts",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{Subscription}"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "createdOn",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "Severity",
+              "formatter": 11
+            },
+            {
+              "columnMatch": "lastModified",
+              "formatter": 6
+            },
+            {
+              "columnMatch": "affectedResource",
+              "formatter": 1,
+              "formatOptions": {
+                "linkColumn": "affectedResource",
+                "linkTarget": "Resource"
+              }
+            },
+            {
+              "columnMatch": "Details",
+              "formatter": 7,
+              "formatOptions": {
+                "linkTarget": "GenericDetails",
+                "linkIsContextBlade": true
+              }
+            },
+            {
+              "columnMatch": "alertState",
+              "formatter": 1
+            },
+            {
+              "columnMatch": "monitorService",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "properties",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "AffectedObjects",
+              "formatter": 5
+            }
+          ],
+          "rowLimit": 1000,
+          "filter": true,
+          "labelSettings": [
+            {
+              "columnId": "createdOn",
+              "label": "Created On"
+            },
+            {
+              "columnId": "name",
+              "label": "Name"
+            },
+            {
+              "columnId": "lastModified",
+              "label": "Last modified"
+            },
+            {
+              "columnId": "affectedResource",
+              "label": "Affected Resource"
+            },
+            {
+              "columnId": "alertState",
+              "label": "Alert state"
+            },
+            {
+              "columnId": "monitorService",
+              "label": "Monitor service"
+            },
+            {
+              "columnId": "properties",
+              "label": "Properties"
+            }
+          ]
+        },
+        "sortBy": []
+      },
+      "showPin": true,
+      "name": "openAlerts",
+      "styleSettings": {
+        "showBorder": true
+      }
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

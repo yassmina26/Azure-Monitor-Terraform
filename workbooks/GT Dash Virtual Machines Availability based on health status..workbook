@@ -1,0 +1,304 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "{Subscription}"
+        ],
+        "parameters": [
+          {
+            "id": "1ca69445-60fc-4806-b43d-ac7e6aad630a",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscription",
+            "type": 6,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.compute/virtualmachines'\r\n\t| summarize Count = count() by subscriptionId\r\n\t| order by Count desc\r\n\t| extend Rank = row_number()\r\n\t| project value = subscriptionId, label = subscriptionId, selected = Rank == 1",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "/subscriptions/9e594e87-09ad-4ec5-a907-404eca6ce37b",
+              "/subscriptions/0dc9fa44-bc2a-4ccf-b509-5d5d7060ccc2",
+              "/subscriptions/372eedd3-d913-4439-980f-ec05a0b45964",
+              "/subscriptions/09d81800-83a4-4e0f-8355-cf6b393d7adf",
+              "/subscriptions/01b1b987-a1de-4caf-a188-fc7755e4ff77",
+              "/subscriptions/40ac2375-f13a-4487-815e-41b0348663f5",
+              "/subscriptions/eb7b8bcd-7c50-4e00-97de-7b4a2a30e54f",
+              "/subscriptions/1405e26c-9c75-4320-b4de-f90238ecba02"
+            ]
+          },
+          {
+            "id": "e94aafa3-c5d9-4523-89f0-4e87aa754511",
+            "version": "KqlParameterItem/1.0",
+            "name": "VirtualMachines",
+            "label": "Virtual Machines",
+            "type": 5,
+            "isRequired": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "query": "where type =~ 'microsoft.compute/virtualmachines'\n\t| order by name asc\n\t| extend Rank = row_number()\n\t| project value = id, label = id, selected = Rank <= 25",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "typeSettings": {
+              "resourceTypeFilter": {
+                "microsoft.compute/virtualmachines": true
+              },
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "showDefault": false
+            },
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": [
+              "value::all"
+            ]
+          },
+          {
+            "id": "c4b69c01-2263-4ada-8d9c-43433b739ff3",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "type": 4,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 300000,
+                  "createdTime": "2018-08-06T23:52:38.870Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 900000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 1800000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 3600000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 14400000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 43200000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 86400000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 172800000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 259200000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                },
+                {
+                  "durationMs": 604800000,
+                  "createdTime": "2018-08-06T23:52:38.871Z",
+                  "isInitialTime": false,
+                  "grain": 1,
+                  "useDashboardTimeRange": false
+                }
+              ],
+              "allowCustom": null
+            },
+            "value": {
+              "durationMs": 3600000
+            },
+            "label": "Time Range"
+          },
+          {
+            "id": "83eda9a9-8850-4fce-ad6b-aeb230f6471c",
+            "version": "KqlParameterItem/1.0",
+            "name": "Message",
+            "type": 1,
+            "query": "where type == 'microsoft.compute/virtualmachines' \r\n| summarize Selected = countif(id in ({VirtualMachines:value})), Total = count()\r\n| extend Selected = iff(Selected > 1000, 1000, Selected)\r\n| project Message = strcat('# ', Selected, ' / ', Total)",
+            "crossComponentResources": [
+              "{Subscription}"
+            ],
+            "isHiddenWhenLocked": true,
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources"
+          }
+        ],
+        "style": "above",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "Parameter block"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "{Message}\r\n_Virtual machines_"
+      },
+      "name": "Resource count",
+      "styleSettings": {
+        "margin": "20px 0 20px 0"
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "HealthResources\r\n| where type =~ 'microsoft.resourcehealth/availabilitystatuses'\r\n| extend ResourceId = tolower(tostring(properties.targetResourceId)), AvailabilityState = tostring(properties.availabilityState)\r\n| project ResourceId ,id , AvailabilityState\r\n\r\n",
+        "size": 3,
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{VirtualMachines}"
+        ],
+        "visualization": "graph",
+        "graphSettings": {
+          "type": 2,
+          "topContent": {
+            "columnMatch": "AvailabilityState",
+            "formatter": 18,
+            "formatOptions": {
+              "linkTarget": "Resource",
+              "subTarget": "resourcehealth",
+              "thresholdsOptions": "icons",
+              "thresholdsGrid": [
+                {
+                  "operator": "contains",
+                  "thresholdValue": "Available",
+                  "representation": "success",
+                  "text": "{0}{1}"
+                },
+                {
+                  "operator": "contains",
+                  "thresholdValue": "Unavailable",
+                  "representation": "cancelled",
+                  "text": "{0}{1}"
+                },
+                {
+                  "operator": "contains",
+                  "thresholdValue": "Unknown",
+                  "representation": "unknown",
+                  "text": "{0}{1}"
+                },
+                {
+                  "operator": "contains",
+                  "thresholdValue": "Degraded",
+                  "representation": "Fired",
+                  "text": "{0}{1}"
+                },
+                {
+                  "operator": "Default",
+                  "thresholdValue": null,
+                  "representation": "success",
+                  "text": "{0}{1}"
+                }
+              ]
+            }
+          },
+          "centerContent": {
+            "columnMatch": "ResourceId",
+            "formatter": 13,
+            "formatOptions": {
+              "linkColumn": "ResourceId",
+              "linkTarget": "Resource",
+              "subTarget": "resourcehealth",
+              "showIcon": false
+            }
+          },
+          "nodeIdField": "ResourceId",
+          "graphOrientation": 3,
+          "showOrientationToggles": false,
+          "nodeSize": null,
+          "staticNodeSize": 100,
+          "colorSettings": {
+            "nodeColorField": "AvailabilityState",
+            "type": 3,
+            "thresholdsGrid": [
+              {
+                "operator": "contains",
+                "thresholdValue": "Available",
+                "representation": "green"
+              },
+              {
+                "operator": "contains",
+                "thresholdValue": "Unavailable",
+                "representation": "orange"
+              },
+              {
+                "operator": "contains",
+                "thresholdValue": "Unknown",
+                "representation": "gray"
+              },
+              {
+                "operator": "contains",
+                "thresholdValue": "Degraded",
+                "representation": "redBright"
+              },
+              {
+                "operator": "contains",
+                "thresholdValue": "supported",
+                "representation": "yellow"
+              },
+              {
+                "operator": "Default",
+                "thresholdValue": null,
+                "representation": "lightBlue"
+              }
+            ]
+          },
+          "hivesMargin": 5,
+          "edgeColorSettings": null
+        }
+      },
+      "showPin": true,
+      "name": "query - 0"
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

@@ -1,0 +1,166 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "alertsmanagementresources\r\n| where properties.essentials.startDateTime > ago(72h)\r\n  and properties.essentials.monitorCondition == \"Fired\"\r\n  and properties.essentials.alertState == \"New\"\r\n| extend alertResourceGroup = tostring(parse_json(properties.essentials.targetResourceGroup))\r\n| extend Condition = tostring(parse_json(properties.essentials.monitorCondition))\r\n| extend startTimeDate = tostring(parse_json(properties.essentials.startDateTime))\r\n| extend affectedResource = tostring(parse_json(properties.essentials.targetResourceName))\r\n| extend alertseverity = tostring(parse_json(properties.essentials.severity))\r\n| extend severity = case(alertseverity == \"Sev0\", \" 🚨 Critical\", alertseverity == \"Sev1\", \"❌ Error\", alertseverity == \"Sev2\", \" ⚠️ Warning\", alertseverity == \"Sev3\", \"📢 Informational\", alertseverity == \"Sev4\", \" 📝 Verbose\", \r\n\"NA\")\r\n| summarize arg_max(startTimeDate, name) by affectedResource, alertResourceGroup, severity, Condition\r\n| project name,  affectedResource, alertResourceGroup, severity, Condition, startTimeDate",
+        "size": 3,
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "value::all"
+        ],
+        "visualization": "table",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "$gen_group",
+              "formatter": 16,
+              "formatOptions": {
+                "linkTarget": "Resource",
+                "showIcon": true,
+                "customColumnWidthSetting": "35ch"
+              }
+            },
+            {
+              "columnMatch": "name",
+              "formatter": 1,
+              "formatOptions": {
+                "linkColumn": "name",
+                "linkTarget": "Resource",
+                "subTarget": "",
+                "linkIsContextBlade": true,
+                "customColumnWidthSetting": "34ch"
+              }
+            },
+            {
+              "columnMatch": "affectedResource",
+              "formatter": 1,
+              "formatOptions": {
+                "linkColumn": "affectedResource",
+                "linkTarget": "Resource",
+                "linkIsContextBlade": false,
+                "customColumnWidthSetting": "30ch"
+              }
+            },
+            {
+              "columnMatch": "alertResourceGroup",
+              "formatter": 5
+            },
+            {
+              "columnMatch": "severity",
+              "formatter": 18,
+              "formatOptions": {
+                "thresholdsOptions": "colors",
+                "thresholdsGrid": [
+                  {
+                    "operator": "contains",
+                    "thresholdValue": "Critical",
+                    "representation": "red",
+                    "text": "{0}{1}"
+                  },
+                  {
+                    "operator": "contains",
+                    "thresholdValue": "Warning",
+                    "representation": "yellow",
+                    "text": "{0}{1}"
+                  },
+                  {
+                    "operator": "contains",
+                    "thresholdValue": "Error",
+                    "representation": "redBright",
+                    "text": "{0}{1}"
+                  },
+                  {
+                    "operator": "contains",
+                    "thresholdValue": "Informational",
+                    "representation": "blue",
+                    "text": "{0}{1}"
+                  },
+                  {
+                    "operator": "contains",
+                    "thresholdValue": "Verbose",
+                    "representation": "grayBlue",
+                    "text": "{0}{1}"
+                  },
+                  {
+                    "operator": "Default",
+                    "thresholdValue": null,
+                    "representation": null,
+                    "text": "{0}{1}"
+                  }
+                ]
+              }
+            },
+            {
+              "columnMatch": "startTimeDate",
+              "formatter": 6,
+              "formatOptions": {
+                "customColumnWidthSetting": "28ch"
+              },
+              "numberFormat": {
+                "unit": 0,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": true
+                }
+              },
+              "dateFormat": {
+                "showUtcTime": null,
+                "formatName": "shortDateTimePattern"
+              }
+            },
+            {
+              "columnMatch": "monitorCondition",
+              "formatter": 1
+            }
+          ],
+          "hierarchySettings": {
+            "treeType": 1,
+            "groupBy": [
+              "alertResourceGroup"
+            ],
+            "expandTopLevel": true
+          },
+          "labelSettings": [
+            {
+              "columnId": "name",
+              "label": "Alert Name"
+            },
+            {
+              "columnId": "affectedResource",
+              "label": "Affected Resource"
+            },
+            {
+              "columnId": "alertResourceGroup",
+              "label": "Resource Group"
+            },
+            {
+              "columnId": "severity",
+              "label": "Alert Severity"
+            },
+            {
+              "columnId": "Condition",
+              "label": "Condition"
+            },
+            {
+              "columnId": "startTimeDate",
+              "label": "Start Date and Time"
+            }
+          ]
+        },
+        "sortBy": [],
+        "tileSettings": {
+          "showBorder": false
+        }
+      },
+      "name": "query - 0"
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

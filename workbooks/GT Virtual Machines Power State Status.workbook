@@ -1,0 +1,154 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "crossComponentResources": [
+          "value::all"
+        ],
+        "parameters": [
+          {
+            "id": "1ca69445-60fc-4806-b43d-ac7e6aad630a",
+            "version": "KqlParameterItem/1.0",
+            "name": "Subscriptions",
+            "type": 6,
+            "isRequired": true,
+            "isGlobal": true,
+            "multiSelect": true,
+            "quote": "'",
+            "delimiter": ",",
+            "typeSettings": {
+              "additionalResourceOptions": [
+                "value::all"
+              ],
+              "includeAll": true,
+              "showDefault": false
+            },
+            "value": [
+              "value::all"
+            ]
+          }
+        ],
+        "style": "above",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources"
+      },
+      "name": "Parameter block"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "Click on each status tile to get a filtered result table with power state details.",
+              "style": "info"
+            },
+            "name": "text - 16",
+            "styleSettings": {
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Resources\r\n| where type =~ \"Microsoft.Compute/virtualMachines\"\r\n| extend State = properties.extended.instanceView.powerState.code\r\n//| extend Statee = case(State == \"PowerState/running\", \"Running\", State == \"PowerState/deallocated\", \"Deallocated\",  \"NA\")\r\n| summarize Count = count() by tostring(State)\r\n\r\n\r\n",
+              "size": 0,
+              "exportFieldName": "State",
+              "exportParameterName": "State",
+              "queryType": 1,
+              "resourceType": "microsoft.resourcegraph/resources",
+              "crossComponentResources": [
+                "{Subscriptions}"
+              ],
+              "visualization": "tiles",
+              "gridSettings": {
+                "filter": true
+              },
+              "tileSettings": {
+                "titleContent": {
+                  "columnMatch": "State",
+                  "formatter": 1
+                },
+                "leftContent": {
+                  "columnMatch": "Count",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "redGreen"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "style": "decimal",
+                      "maximumFractionDigits": 2,
+                      "maximumSignificantDigits": 3
+                    }
+                  }
+                },
+                "showBorder": false,
+                "sortCriteriaField": "State",
+                "sortOrderField": 2
+              }
+            },
+            "showPin": true,
+            "name": "VMs Availability Status"
+          }
+        ],
+        "exportParameters": true
+      },
+      "name": "Grp_filtered_by_vm_powerstate"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Resources\r\n| where type =~ \"Microsoft.Compute/virtualMachines\"\r\n| extend State = properties.extended.instanceView.powerState.code\r\n| where State == ('{State}')\r\n| project id, State = tostring(properties.extended.instanceView.powerState.displayStatus)\r\n\r\n",
+        "size": 0,
+        "title": "Open details about virtual machines based on filter = '{State}'",
+        "queryType": 1,
+        "resourceType": "microsoft.resourcegraph/resources",
+        "crossComponentResources": [
+          "{Subscriptions}"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "name",
+              "formatter": 13,
+              "formatOptions": {
+                "linkTarget": "Resource",
+                "showIcon": false
+              }
+            }
+          ],
+          "labelSettings": [
+            {
+              "columnId": "id",
+              "label": "ResourceId"
+            },
+            {
+              "columnId": "State",
+              "label": "Power State"
+            }
+          ]
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "State",
+        "comparison": "isNotEqualTo"
+      },
+      "showPin": true,
+      "name": "VmsPowerStateStatus"
+    }
+  ],
+  "fallbackResourceIds": [
+    "azure monitor"
+  ],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
